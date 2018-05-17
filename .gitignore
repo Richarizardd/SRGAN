@@ -1,0 +1,3 @@
+./datasets/HD_Endoscopy/*
+./results/4_Residual_HD_Endoscopy/*
+./ipynb_checkpoints/
