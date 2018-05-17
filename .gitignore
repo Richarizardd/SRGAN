@@ -1,4 +1,2 @@
 .DS_Store
-./datasets/HD_Endoscopy/*.jpg
-./results/4_Residual_HD_Endoscopy/*.jpg
-./ipynb_checkpoints/
+.ipynb_checkpoints/
