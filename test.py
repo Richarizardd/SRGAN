@@ -11,9 +11,11 @@ from torchvision.transforms import ToTensor, ToPILImage
 
 from Model_Residual import Generator as Residual
 from Model_Dense import Generator as Dense
+# from DenseModel import Generator as Dense
 
-# python test.py --gpu_ids -1 --name 4_Residual_HD_Endoscopy --which_model_netG Residual
-# python test.py --gpu_ids -1 --name 4_Dense_HD_Endoscopy --which_model_netG Dense
+# python test.py --dataroot ./datasets/Test/  --gpu_ids -1 --name 4_Residual_Test --which_model_netG Residual
+# python test.py --dataroot ./datasets/Example/ --gpu_ids -1 --name 4_Dense_HD_Endoscopy --which_model_netG Dense
+# python test.py --dataroot ./datasets/Example/ --gpu_ids -1 --name 4_Dense_HD_Endoscopy --which_model_netG Residual
 
 ### 1. Argparse + CUDA Initialization
 parser = argparse.ArgumentParser(description='Test Dataset')
