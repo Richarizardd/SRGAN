@@ -63,9 +63,14 @@ for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 
 	img_gt = Image.open(opt.dataroot+"/"+image_name).convert('RGB')
 
+	if img_gt.size[0] > 1230:
+		img_gt = img_gt.resize((1230, 1230/float(img_gt.size[0])*img_gt.size[1]))
+
+
+
 	img_test = img_gt.resize((img_gt.size[0]/opt.upscale_factor, img_gt.size[1]/opt.upscale_factor))
 	img_test_tensor = Variable(ToTensor()(img_test), volatile=True).unsqueeze(0)
-	if len(opt.gpu_ids) > 0: img_test_tensor = img_test_tensor.cuda(opt.gpu_ids)
+	if len(opt.gpu_ids) > 0: img_test_tensor = img_test_tensor.cuda(opt.gpu_ids[0])
 
 	out = model(img_test_tensor)
 	img_pred = ToPILImage()(out[0].data.cpu())
