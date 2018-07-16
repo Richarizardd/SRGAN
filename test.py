@@ -44,7 +44,7 @@ if len(opt.gpu_ids) > 0:
 model = eval(opt.which_model_netG)(opt.upscale_factor).eval()
 if len(opt.gpu_ids) > 0:
 	model.to(opt.gpu_ids[0])
-    model = torch.nn.DataParallel(model, gpu_ids)
+	model = torch.nn.DataParallel(model, gpu_ids)
 model_name = 'epochs/'+opt.which_model_netG+"_netG_epoch_"+str(opt.upscale_factor)+"_"+opt.which_epoch+".pth"
 if len(opt.gpu_ids) > 0:
 	print "Successfully loaded model in GPU Mode with:", opt.gpu_ids
