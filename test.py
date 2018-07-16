@@ -42,6 +42,8 @@ if len(opt.gpu_ids) > 0:
 
 ### 2. Model Initialization
 model = eval(opt.which_model_netG)(opt.upscale_factor).eval()
+if len(opt.gpu_ids) > 1:
+	model = nn.DataParallel(model)
 model_name = 'epochs/'+opt.which_model_netG+"_netG_epoch_"+str(opt.upscale_factor)+"_"+opt.which_epoch+".pth"
 if len(opt.gpu_ids) > 0:
 	print "Successfully loaded model in GPU Mode with:", opt.gpu_ids
@@ -59,10 +61,11 @@ for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 	print i+1, "Test+Save:", "results/"+opt.name+"/"+image_name
 
 	img_gt = Image.open(opt.dataroot+"/"+image_name).convert('RGB')
+	img_gt = 
 
-	img_test= img_gt.resize((img_gt.size[0]/opt.upscale_factor, img_gt.size[1]/opt.upscale_factor))
+	img_test = img_gt.resize((img_gt.size[0]/opt.upscale_factor, img_gt.size[1]/opt.upscale_factor))
 	img_test_tensor = Variable(ToTensor()(img_test), volatile=True).unsqueeze(0)
-	if len(opt.gpu_ids) > 0: img_test_tensor = img_test_tensor.cuda(opt.gpu_ids[0])
+	if len(opt.gpu_ids) > 0: img_test_tensor = img_test_tensor.cuda(opt.gpu_ids)
 
 	out = model(img_test_tensor)
 	img_pred = ToPILImage()(out[0].data.cpu())
