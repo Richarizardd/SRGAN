@@ -61,7 +61,7 @@ for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 	print i+1, "Test+Save:", "results/"+opt.name+"/"+image_name
 
 	img_gt = Image.open(opt.dataroot+"/"+image_name).convert('RGB')
-	img_gt = 
+	#img_gt = 
 
 	img_test = img_gt.resize((img_gt.size[0]/opt.upscale_factor, img_gt.size[1]/opt.upscale_factor))
 	img_test_tensor = Variable(ToTensor()(img_test), volatile=True).unsqueeze(0)
