@@ -66,8 +66,8 @@ for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 
 	img_gt = Image.open(opt.dataroot+"/"+image_name).convert('RGB')
 
-	#if img_gt.size[0] > 1230:
-	#		img_gt = img_gt.resize((1230, int(1230/float(img_gt.size[0])*img_gt.size[1])))
+	if img_gt.size[0] > 1230:
+			img_gt = img_gt.resize((1230, int(1230/float(img_gt.size[0])*img_gt.size[1])))
 
 
 
@@ -82,4 +82,3 @@ for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 	img_pred.save("results/"+opt.name+"/"+image_name[:-4]+"_pred.jpg")
 	img_resize.save("results/"+opt.name+"/"+image_name[:-4]+"_resize.jpg")
 	img_gt.save("results/"+opt.name+"/"+image_name[:-4]+"_gt.jpg")
-	time.sleep(5)

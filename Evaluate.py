@@ -20,7 +20,7 @@ SSIMs_resize_res, PSNRs_resize_res = [], []
 
 
 path = "results/4_Residual_Test/"
-test_dir = os.listdir(path)
+test_dir = os.listdir(path).sort()
 
 for i in np.arange(0, len(test_dir), 3):
     if i % 60 == 0:
@@ -51,7 +51,7 @@ SSIMs_pred_dense, PSNRs_pred_dense = [], []
 SSIMs_resize_dense, PSNRs_resize_dense = [], []
 
 path = "4_Dense_Test/"
-test_dir = os.listdir(path)
+test_dir = os.listdir(path).sort()
 
 for i in np.arange(0, len(test_dir), 3)[:0]:
     if i % 60 == 0:
