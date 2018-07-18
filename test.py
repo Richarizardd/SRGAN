@@ -1,4 +1,5 @@
 import argparse
+import math
 import os
 import time
 
@@ -40,7 +41,7 @@ if len(opt.gpu_ids) > 0:
 
 if os.path.isdir("./results/"+opt.name):
 	os.system("rm -r ./results/"+opt.name)
-os.system("mkdir ./results/"+opt.name):
+os.system("mkdir ./results/"+opt.name)
 
 
 
@@ -70,7 +71,7 @@ for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 	max_width = 800
 	if img_gt.size[0] > max_width:
 		new_height = int(max_width/float(img_gt.size[0])*img_gt.size[1])
-		new_height = int(math.ceil(new_height / 2.) * 2)
+		new_height = int(math.floor(new_height / 2.) * 2)
 		img_gt = img_gt.resize((max_width, new_height))
 
 
@@ -81,7 +82,12 @@ for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 
 	out = model(img_test_tensor)
 	img_pred = ToPILImage()(out[0].data.cpu())
-	img_resize = img_test.resize((img_test.size[0]*opt.upscale_factor, img_test.size[1]*opt.upscale_factor))
+	size = img_pred.size
+	img_resize = img_test.resize((size[0], size[1]))
+	img_gt = img_gt.resize((size[0], size[1]))
+
+	assert img_gt.size == img_pred.size == img_resize.size
+
 
 	img_pred.save("results/"+opt.name+"/"+image_name[:-4]+"_pred.jpg")
 	img_resize.save("results/"+opt.name+"/"+image_name[:-4]+"_resize.jpg")
