@@ -20,14 +20,13 @@ from Evaluate import evaluate
 
 ### 1. Argparse + CUDA Initialization
 parser = argparse.ArgumentParser(description='Test Dataset')
-parser.add_argument('--dataroot', default='./datasets/HD_Endoscopy', type=str, help='test low resolution images')
+parser.add_argument('--dataroot', default='./datasets/val', type=str, help='test low resolution images')
 parser.add_argument('--gpu_ids', default='0', type=str)
 parser.add_argument('--name', default='4_Residual_Test', type=str, help='generator model epoch name')
 parser.add_argument('--which_model_netG', type=str, default="Residual")
 parser.add_argument('--upscale_factor', default=4, type=int, help='super resolution upscale factor')
 parser.add_argument('--which_epoch', default='100', type=str, help='which epoch')
 opt = parser.parse_args()
-
 
 str_ids = opt.gpu_ids.split(',')
 opt.gpu_ids = []
@@ -64,18 +63,19 @@ if len(opt.gpu_ids) > 0:
 ### 3. Test Procedure
 if os.path.isdir("./results/"+opt.name):
 	os.system("rm -r ./results/"+opt.name)
-os.system('mkdir ./results/"+opt.name')
+os.system('mkdir ./results/'+opt.name)
 
 for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 	#print i+1, "Test+Save:", "results/"+opt.name+"/"+image_name
 
 	img_gt = Image.open(opt.dataroot+"/"+image_name).convert('RGB')
 	
-	max_width = 800
-	if img_gt.size[0] > max_width:
-		new_height = int(max_width/float(img_gt.size[0])*img_gt.size[1])
-		new_height = int(math.floor(new_height / 2.) * 2)
-		img_gt = img_gt.resize((max_width, new_height))
+	if opt.which_model_netG == "Dense":
+		max_width = 800
+		if img_gt.size[0] > max_width:
+			new_height = int(max_width/float(img_gt.size[0])*img_gt.size[1])
+			new_height = int(math.floor(new_height / 2.) * 2)
+			img_gt = img_gt.resize((max_width, new_height))
 
 	img_test = img_gt.resize((img_gt.size[0]/opt.upscale_factor, img_gt.size[1]/opt.upscale_factor))
 	img_test_tensor = Variable(ToTensor()(img_test), volatile=True).unsqueeze(0)
@@ -90,4 +90,4 @@ for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 	img_resize.save("results/"+opt.name+"/"+image_name[:-4]+"_resize.jpg")
 	img_gt.save("results/"+opt.name+"/"+image_name[:-4]+"_gt.jpg")
 
-evaluate
+evalute('./results/'+opt.name)

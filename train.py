@@ -14,12 +14,19 @@ import pytorch_ssim
 from data_utils import TrainDatasetFromFolder, ValDatasetFromFolder, display_transform
 from loss import GeneratorLoss
 # from model import Generator, Discriminator
-from DenseModel import Generator, Discriminator
+from Model_Residual import Generator, Discriminator
+from Model_Dense import Generator as Dense
+
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
+#parser.add_argument('--name', default='4_Residual_Test', type=str, help='generator model epoch name')
+#parser.add_argument('--which_model_netG', type=str, default="Residual")
+#parser.add_argument('--upscale_factor', default=4, type=int, help='super resolution upscale factor')
+#parser.add_argument('--which_epoch', default='100', type=str, help='which epoch')
+
+
 parser.add_argument('--crop_size', default=88, type=int, help='training images crop size')
-parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8],
-                    help='super resolution upscale factor')
+parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8], help='super resolution upscale factor')
 parser.add_argument('--num_epochs', default=100, type=int, help='train epoch number')
 
 opt = parser.parse_args()
@@ -28,8 +35,8 @@ CROP_SIZE = opt.crop_size
 UPSCALE_FACTOR = opt.upscale_factor
 NUM_EPOCHS = opt.num_epochs
 
-train_set = TrainDatasetFromFolder('data/train', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-val_set = ValDatasetFromFolder('data/val', upscale_factor=UPSCALE_FACTOR)
+train_set = TrainDatasetFromFolder('datasets/train', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+val_set = ValDatasetFromFolder('datasets/val', upscale_factor=UPSCALE_FACTOR)
 train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=16, shuffle=True) #64
 val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=1, shuffle=False)
 
@@ -117,6 +124,7 @@ for epoch in range(1, NUM_EPOCHS + 1):
     val_bar = tqdm(val_loader)
     valing_results = {'mse': 0, 'ssims': 0, 'psnr': 0, 'ssim': 0, 'batch_sizes': 0}
     val_images = []
+
     for val_lr, val_hr_restore, val_hr in val_bar:
         batch_size = val_lr.size(0)
         valing_results['batch_sizes'] += batch_size
@@ -165,6 +173,9 @@ for epoch in range(1, NUM_EPOCHS + 1):
     results['g_score'].append(running_results['g_score'] / running_results['batch_sizes'])
     results['psnr'].append(valing_results['psnr'])
     results['ssim'].append(valing_results['ssim'])
+
+    if epoch % 5 == 0 and epoch != 0:
+        os.system("python test.py")
 
     if epoch % 10 == 0 and epoch != 0:
         out_path = 'statistics/'
