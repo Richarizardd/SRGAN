@@ -28,6 +28,7 @@ parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 parser.add_argument('--crop_size', default=88, type=int, help='training images crop size')
 parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8], help='super resolution upscale factor')
 parser.add_argument('--num_epochs', default=100, type=int, help='train epoch number')
+parser.add_argument('--debug', default=1, type=int, help='debug')
 
 opt = parser.parse_args()
 
@@ -174,8 +175,8 @@ for epoch in range(1, NUM_EPOCHS + 1):
     results['psnr'].append(valing_results['psnr'])
     results['ssim'].append(valing_results['ssim'])
 
-    if epoch % 5 == 0 and epoch != 0:
-        os.system("python test.py")
+    if epoch % opt.debug == 0 and epoch != 0:
+        os.system("python test.py --dataroot ./datasets/val/  --gpu_ids 0 --name 4_Residual_Test --which_model_netG Residual")
 
     if epoch % 10 == 0 and epoch != 0:
         out_path = 'statistics/'
