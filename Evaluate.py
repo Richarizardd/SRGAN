@@ -25,8 +25,7 @@ def evaluate(path):
     test_dir.sort()
 
     for i in np.arange(0, len(test_dir), 3):
-        if i % 60 == 0:
-            print i, i+1, i+2
+        # if i % 60 == 0: print i, i+1, i+2
 
         gt = np.array(Image.open(path+test_dir[i]))
         pred = np.array(Image.open(path+test_dir[i+1]))
@@ -44,7 +43,7 @@ def evaluate(path):
     print "PSNR Pred:", np.mean(PSNRs_pred)
     print "PSNR Resize:", np.mean(PSNRs_resize)
     
-def main()
+def main():
     path = sys.argv[1]
     evaluate(path)
 
