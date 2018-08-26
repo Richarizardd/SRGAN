@@ -1,5 +1,13 @@
 # SRGAN for Endoscopy 
 
+## Train
+
+To train ResNet, run:
+```
+python train.py
+```
+
+
 ## Testing
 
 To test ResNet + DenseNet respectively on the Testing dataset, run:
