@@ -90,4 +90,6 @@ for i, image_name in enumerate(os.listdir(opt.dataroot+"/")):
 	img_resize.save("results/"+opt.name+"/"+image_name[:-4]+"_resize.jpg")
 	img_gt.save("results/"+opt.name+"/"+image_name[:-4]+"_gt.jpg")
 
+print "Evaluating...",
 evalute('./results/'+opt.name)
+print "Done"

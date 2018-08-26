@@ -176,6 +176,7 @@ for epoch in range(1, NUM_EPOCHS + 1):
     results['ssim'].append(valing_results['ssim'])
 
     if epoch % opt.debug == 0 and epoch != 0:
+        print "Testing Val...",
         os.system("python test.py --dataroot ./datasets/val/  --gpu_ids 0 --name 4_Residual_Test --which_model_netG Residual")
 
     if epoch % 10 == 0 and epoch != 0:
