@@ -19,8 +19,8 @@ from Model_Dense import Generator as Dense
 
 
 parser = argparse.ArgumentParser(description='Train Super Resolution Models')
-#parser.add_argument('--name', default='4_Residual_Test', type=str, help='generator model epoch name')
-#parser.add_argument('--which_model_netG', type=str, default="Residual")
+parser.add_argument('--name', default='4_Residual_Test', type=str, help='generator model epoch name')
+parser.add_argument('--which_model_netG', type=str, default="Residual")
 #parser.add_argument('--upscale_factor', default=4, type=int, help='super resolution upscale factor')
 #parser.add_argument('--which_epoch', default='100', type=str, help='which epoch')
 
@@ -38,7 +38,7 @@ NUM_EPOCHS = opt.num_epochs
 
 train_set = TrainDatasetFromFolder('datasets/train', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
 val_set = ValDatasetFromFolder('datasets/val', upscale_factor=UPSCALE_FACTOR)
-train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=16, shuffle=True) #64
+train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=4, shuffle=True) #64
 val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=1, shuffle=False)
 
 netG = Generator(UPSCALE_FACTOR)
@@ -63,6 +63,41 @@ optimizerG = optim.Adam(netG.parameters())
 optimizerD = optim.Adam(netD.parameters())
 
 results = {'d_loss': [], 'g_loss': [], 'd_score': [], 'g_score': [], 'psnr': [], 'ssim': []}
+
+
+def test():
+    if os.path.isdir("./results/"+opt.name):
+        os.system("rm -r ./results/"+opt.name)
+    os.system('mkdir ./results/'+opt.name)
+
+    for i, image_name in enumerate(os.listdir('datasets/val/')):
+        #print i+1, "Test+Save:", "results/"+opt.name+"/"+image_name
+
+        img_gt = Image.open('datasets/val/'+image_name).convert('RGB')
+        
+        if opt.which_model_netG == "Dense":
+            max_width = 800
+            if img_gt.size[0] > max_width:
+                new_height = int(max_width/float(img_gt.size[0])*img_gt.size[1])
+                new_height = int(math.floor(new_height / 2.) * 2)
+                img_gt = img_gt.resize((max_width, new_height))
+
+        img_test = img_gt.resize((img_gt.size[0]/opt.upscale_factor, img_gt.size[1]/opt.upscale_factor))
+        img_test_tensor = Variable(ToTensor()(img_test), volatile=True).unsqueeze(0)
+        img_test_tensor = img_test_tensor.cuda(opt.gpu_ids[0])
+        out = model(img_test_tensor)
+        img_pred = ToPILImage()(out[0].data.cpu())
+        size = img_pred.size
+        img_resize = img_test.resize((size[0], size[1]))
+        img_gt = img_gt.resize((size[0], size[1]))
+        assert img_gt.size == img_pred.size == img_resize.size
+        img_pred.save("results/"+opt.name+"/"+image_name[:-4]+"_pred.jpg")
+        img_resize.save("results/"+opt.name+"/"+image_name[:-4]+"_resize.jpg")
+        img_gt.save("results/"+opt.name+"/"+image_name[:-4]+"_gt.jpg")
+
+    print "Evaluating...",
+    evalute('./results/'+opt.name)
+    print "Done"
 
 for epoch in range(1, NUM_EPOCHS + 1):
     train_bar = tqdm(train_loader)
